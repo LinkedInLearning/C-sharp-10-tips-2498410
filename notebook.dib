@@ -1,0 +1,49 @@
+﻿#!csharp
+
+#nullable enable
+
+bool VerifierNom(string? chaine) => chaine is not null and { Length: >0 };
+
+string Patronyme(string nomComplet) => nomComplet.Split(' ')[1];
+
+#!csharp
+
+#nullable enable
+
+string? s = Random.Shared.Next(2)==0 ? "Sylvain Labasse" : null;
+
+VerifierNom(s) ? Patronyme(s) : "(null)"
+
+#!csharp
+
+#nullable enable
+
+public class Personne
+{
+    public Personne(string nomComplet)
+    {
+        NomComplet = nomComplet;
+    }
+    public string Prenom     { get; set; }
+    public string Patronyme  { get; set; }
+    public string NomComplet
+    {
+        set 
+        {
+            var parts = value.Split(' ');
+
+            if(parts.Length<2)
+            {
+                Prenom = "";
+                Patronyme = value;
+            }
+            else
+            {
+                Prenom = parts[0];
+                Patronyme = parts[1];
+            }            
+        }
+        get => $"{Prenom} {Patronyme}";        
+    }    
+}
+new Personne("Sylvain Labasse")
