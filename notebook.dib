@@ -1,0 +1,49 @@
+﻿#!csharp
+
+[Flags]
+enum Titre
+{
+    Chef_fe    =0b001,
+    Sorcier_e  =0b010,
+    Guerrier_e =0b100
+}
+string nom = "Plume d'Aigle";
+var titre = Titre.Chef_fe | Titre.Guerrier_e;
+
+$"{nom}: {titre}"
+
+#!csharp
+
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
+void Assert2(
+    [DoesNotReturnIf(false)] bool condition,
+    [CallerArgumentExpression("condition")] string expression = "",
+    [CallerMemberName] string methode = "",
+    [CallerFilePath  ] string fichier = "???",
+    [CallerLineNumber] int ligne = 0) 
+{ 
+    if(!condition)
+    {
+        throw new ArgumentException($"Assertion '{expression}' {methode} ({fichier} {ligne})");
+    }
+}
+
+#!csharp
+
+#nullable enable
+
+void Traiter(string? nom, Titre t)
+{
+    Assert2(nom is not null and { Length: >0 });
+    
+    StringBuilder sb = new(nom);
+    var sep = ",";
+    
+    if(t.HasFlag(Titre.Chef_fe   )) { sb.Insert(0, "Grand-e "); }
+    if(t.HasFlag(Titre.Sorcier_e )) { sb.Append($"{sep} puissant-e"); sep=" et"; }
+    if(t.HasFlag(Titre.Guerrier_e)) { sb.Append($"{sep} brave"); }
+    nom = sb.ToString();
+}
+Traiter("", titre)
