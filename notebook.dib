@@ -1,0 +1,159 @@
+﻿#!csharp
+
+#nullable enable
+
+record FicheAnimal(string Identifiant, int? IdMaitre=null, string? Nom=null)
+{
+    public virtual bool Equals(FicheAnimal? obj) 
+        => obj is FicheAnimal autre && Identifiant == autre.Identifiant;
+
+    public override int GetHashCode() 
+        => Identifiant.GetHashCode();
+}
+
+var registre = new HashSet<FicheAnimal>() {
+    new FicheAnimal("AAA111"),
+    new FicheAnimal("AAB112", 1, "Spot"),
+    new FicheAnimal("AAC113", 1, "Bandit"),
+    new FicheAnimal("AAD114"),
+    new FicheAnimal("AAE115", 3, "Benji"),
+    new FicheAnimal("AAF116"),
+    new FicheAnimal("AAG117", 2, "Brownie")
+};
+
+#!csharp
+
+var aaa111 = new FicheAnimal("AAA111");
+var aab112 = new FicheAnimal("AAB112");
+
+registre.Contains(aaa111)
+//registre.Contains(aab112)
+
+#!csharp
+
+#nullable enable
+
+class FicheAnimal
+{
+    public FicheAnimal(int? idMaitre, string? nom, string? identifiant)
+    {
+        IdMaitre    = idMaitre;
+        Nom         = nom;
+        Identifiant = identifiant;        
+    }
+    public FicheAnimal(string identifiant, int? idMaitre=null, string? nom=null) : this(idMaitre, nom, identifiant) { }               
+    public FicheAnimal(int idMaitre, string nom) : this(idMaitre, nom, null) { }
+    
+    public void Identifier(string identifiant) => Identifiant = identifiant;
+    
+    public int?    IdMaitre      { get; private set; } = null;
+    public string? Nom           { get; private set; } = null;
+    public string? Identifiant   { get; private set; } = null;
+
+    public override bool Equals(object? obj) 
+        => obj is FicheAnimal autre && (
+            Identifiant is not null && Identifiant == autre.Identifiant
+            || IdMaitre == autre.IdMaitre && Nom == autre.Nom
+        );
+
+    public override int GetHashCode() 
+        => Identifiant is not null  
+            ? Identifiant.GetHashCode() 
+            : (IdMaitre, Nom).GetHashCode();
+}
+
+var registre = new HashSet<FicheAnimal>() {
+    new FicheAnimal("AAA111"),
+    new FicheAnimal("AAB112", 1, "Spot"),
+    new FicheAnimal("AAC113", 1, "Bandit"),
+    new FicheAnimal("AAD114"),
+    new FicheAnimal("AAE115", 3, "Benji"),
+    new FicheAnimal("AAF116"),
+    new FicheAnimal("AAG117", 2, "Brownie"),
+    new FicheAnimal(2, "Spot")
+};
+
+#!csharp
+
+var registre0 = registre.ElementAt(0);
+var aaa111  = new FicheAnimal("AAA111");
+var spot_2  = new FicheAnimal(2, "Spot");
+
+registre.Contains(aaa111)
+
+#!csharp
+
+FicheAnimal fiche;
+
+registre.TryGetValue(spot_2, out fiche)
+
+#!csharp
+
+fiche.Identifier("BBB222");
+
+registre.Contains(new FicheAnimal("BBB222"))
+
+#!markdown
+
+## Bonus (hors vidéo)
+
+#!csharp
+
+#nullable enable
+
+class FicheAnimal
+{
+    public FicheAnimal(int? idMaitre, string? nom, string? identifiant)
+    {
+        IdMaitre    = idMaitre;
+        Nom         = nom;
+        Identifiant = identifiant;        
+    }
+    public FicheAnimal(string identifiant, int? idMaitre=null, string? nom=null) : this(idMaitre, nom, identifiant) { }               
+    public FicheAnimal(int idMaitre, string nom) : this(idMaitre, nom, null) { }
+    
+    public FicheAnimal Recreer(string identifiant)
+        => Identifiant is null 
+            ? new FicheAnimal(IdMaitre!.Value, Nom!, identifiant)
+            : throw new InvalidOperationException("Animal déjà tatoué/pucé");
+    
+    public int?    IdMaitre      { get; private set; } = null;
+    public string? Nom           { get; private set; } = null;
+    public string? Identifiant   { get; private set; } = null;    
+
+    public override bool Equals(object? obj) 
+        => obj is FicheAnimal autre && (
+            Identifiant is not null && Identifiant == autre.Identifiant
+            || IdMaitre == autre.IdMaitre && Nom == autre.Nom
+        );
+
+    public override int GetHashCode() 
+        => Identifiant is not null  
+            ? Identifiant.GetHashCode() 
+            : ;(IdMaitre, Nom).GetHashCode();
+}
+
+var registre = new HashSet<FicheAnimal>() {
+    new FicheAnimal("AAA111"),
+    new FicheAnimal("AAB112", 1, "Spot"),
+    new FicheAnimal("AAC113", 1, "Bandit"),
+    new FicheAnimal("AAD114"),
+    new FicheAnimal("AAE115", 3, "Benji"),
+    new FicheAnimal("AAF116"),
+    new FicheAnimal("AAG117", 2, "Brownie"),
+    new FicheAnimal(2, "Spot")
+};
+
+#!csharp
+
+FicheAnimal fiche;
+var spot_2  = new FicheAnimal(2, "Spot");
+
+if(registre.TryGetValue(spot_2, out fiche))
+{
+    registre.Remove(fiche);
+    var nouvelleFiche = fiche.Recreer("BBB222");
+
+    registre.Add(nouvelleFiche);
+}
+registre.Contains(new FicheAnimal("BBB222"))
