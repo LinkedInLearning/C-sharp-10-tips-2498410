@@ -1,0 +1,72 @@
+﻿#!csharp
+
+#r "System.ComponentModel.DataAnnotations"
+
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+
+[MetadataType(typeof(ProduitMetadata))]
+partial class Produit
+{
+    static Produit() => TypeDescriptor.AddProviderTransparent(
+        new AssociatedMetadataTypeTypeDescriptionProvider(
+            typeof(Produit),
+            typeof(ProduitMetadata)
+        ),
+        typeof(Produit)
+    );
+    
+    public decimal PrixDeVente => PrixDAchat * Marge;
+    
+    internal class ProduitMetadata
+    {
+        [Required(ErrorMessage="Libellé requis")]
+        public string Libelle { get; set; }
+    }
+}
+
+//------------------- Fichier (re)généré -------------------//
+partial class Produit
+{
+    public int Id               { get; set; }
+    public string  Libelle      { get; set; }
+    public decimal PrixDAchat   { get; set; }
+    public decimal Marge        { get; set; }
+}
+//----------------------------------------------------------//
+
+var produit = new Produit{ Id=2, Libelle="Tongs Bahamas", PrixDAchat=2.5m, Marge=2m };
+produit
+
+#!csharp
+
+#r "System.ComponentModel.DataAnnotations"
+
+using System.ComponentModel.DataAnnotations;
+
+var res = new List<ValidationResult>();
+
+Validator.TryValidateObject(produit, new ValidationContext(produit), res);
+res
+
+#!csharp
+
+record ProduitWrapper(Produit Inner)
+{
+    public int Id               { get => Inner.Id;          set => Inner.Id=value; }
+    [Required(ErrorMessage="Libellé requis")]
+    public string  Libelle      { get => Inner.Libelle;     set => Inner.Libelle=value; }
+    public decimal PrixDAchat   { get => Inner.PrixDAchat;  set => Inner.PrixDAchat=value; }
+    public decimal Marge        { get => Inner.Marge;       set => Inner.Marge=value; }
+    
+    public decimal PrixDeVente => PrixDAchat*Marge;
+}
+var produit = new ProduitWrapper(new Produit{ Id=2, Libelle="", PrixDAchat=2.5m, Marge=2m });
+
+#!csharp
+
+//static class ProduitTVAExtensions {
+    static decimal GetPrixDAchatTTC (this Produit p, decimal tva) => p.PrixDAchat*(1m+tva);    
+//}
+
+produit.GetPrixDAchatTTC(0.2m)
