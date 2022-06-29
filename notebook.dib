@@ -1,0 +1,93 @@
+﻿#!csharp
+
+using System.Text.RegularExpressions;
+
+enum SivErreur
+{
+    Aucune,
+    NombreDeSections,    
+    Prefixe,
+    Nombre,
+    Suffixe
+}
+class SivException : FormatException
+{
+    public SivException(string msg, SivErreur code) : base(msg) => Code = code;
+    public SivErreur Code { get; init; }
+}
+record Immatriculation
+{
+    public string  Prefixe  { get; init; } = "OO";
+    public string  Nombre   { get; init; } = "000";
+    public string  Suffixe  { get; init; } = "OO";
+
+    public static readonly Immatriculation Invalid = new Immatriculation();
+
+    private Immatriculation() {}
+
+    public static bool TryParse(string entree, out Immatriculation sortie, out SivErreur erreur)
+    {
+        var parts = entree.Split('-');
+
+        sortie = Immatriculation.Invalid;
+        if(parts.Length < 3)
+            erreur = SivErreur.NombreDeSections;
+        else if(!Regex.Match(parts[0], "^[A-HJ-NP-TW-Z]{2}$").Success)
+            erreur = SivErreur.Prefixe;
+        else if(!Regex.Match(parts[1], "^[0-9]{3}$").Success)
+            erreur = SivErreur.Nombre;        
+        else if(!Regex.Match(parts[0], "^[A-HJ-NP-TW-Z]{2}$").Success)
+            erreur = SivErreur.Suffixe;
+        else
+        {
+            erreur = SivErreur.Aucune;
+            sortie = new Immatriculation{ 
+                Prefixe = parts[0],
+                Nombre  = parts[1],
+                Suffixe = parts[2]
+            };
+        }
+        return erreur == SivErreur.Aucune;
+    }
+    public static Immatriculation Parse(string entrée) 
+        => TryParse(entrée, out var sortie, out var err) 
+            ? sortie 
+            : throw new SivException("Mauvais format SIV", err);
+
+    public static bool TryParse(string entrée, out Immatriculation sortie) 
+        => TryParse(entrée, out sortie, out var _);
+}
+
+#!csharp
+
+Immatriculation.Parse("AB-123-CD")
+
+#!csharp
+
+(Immatriculation.TryParse("AI-123-CD", out var _, out var code), code)
+
+#!csharp
+
+try
+{
+    var immatriculation = Immatriculation.Parse("AI-123-CD");
+}
+catch(SivException e)
+{
+    Console.Error.WriteLine($"{e.Message} ({e.Code})");
+}
+
+#!csharp
+
+try
+{
+    var immatriculation = Immatriculation.Parse("AB-23-CD");
+}
+catch(SivException e) when (e.Code is SivErreur.Prefixe or SivErreur.Suffixe)
+{
+    Console.Error.WriteLine($"Préfixe et suffixe doivent contenir 2 lettres hors O, I et U.");
+}
+catch(SivException)
+{
+    Console.Error.WriteLine($"Le nombre doit contenir 3 chiffres");
+}
