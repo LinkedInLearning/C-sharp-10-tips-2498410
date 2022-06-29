@@ -1,0 +1,31 @@
+﻿#!csharp
+
+var mot = "HAL";
+
+#!csharp
+
+mot.Count(c => !"AEIOU".Contains(c))
+
+#!csharp
+
+mot.Select(c => (char)(c + 1))
+
+#!csharp
+
+string.Concat(mot.Select(c => (char)(c + 1)))
+
+#!csharp
+
+var cle = 7;
+var phrase = "SLWYPZVUUPLYCVPASHSPILYALWSBZILSSLXBLSSLULZAHKHBKLA";
+
+//string.Concat(phrase.Select(c => (char)(c-cle)))
+string.Concat(phrase.Select(c => (char)(c - cle + (c-cle < 'A' ? 26 : 0))))
+
+#!csharp
+
+phrase.ToLookup(c=>c)
+
+#!csharp
+
+cle = phrase.ToLookup(c=>c).OrderByDescending(g => g.Count()).First().Key-'E'
