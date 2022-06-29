@@ -1,0 +1,143 @@
+﻿#!markdown
+
+## Données
+
+#!csharp
+
+readonly string[] Sources = { 
+    "Configuration 1 de mesure, x=23, y=81, z=21, e=14b, ref=ABC123", 
+    "Configuration 2 de mesure, x=e3, y=24, z=22, e=1e5, ref=BCD234", 
+    "Configuration 3 de mesure, x=25, y=61, z=14, e=445, ref=CDE345",
+    "Configuration 4 de mesure, x=2f, y=2a, z=11, e=a45, ref=DEF456" 
+};
+struct MesureS
+{
+    public DateTime Date { get; init; }
+    public double Valeur { get; init; }
+    public string Source { get; set; }
+}
+class MesureC
+{
+    public DateTime Date { get; init; }
+    public double Valeur { get; init; }
+    public string Source { get; set; }
+}
+
+#!markdown
+
+## Mesure de performance
+
+#!csharp
+
+record Perf(TimeSpan Duree, string Memoire) {}
+
+Perf Mesurer(int essais, bool mem, Action action)
+{
+    var duree = TimeSpan.Zero;
+    var chrono = new System.Diagnostics.Stopwatch();
+
+    if(mem)
+        GC.Collect();
+    var debut = GC.GetAllocatedBytesForCurrentThread();
+    for(int i=0; i<essais; i++)
+    {
+        chrono.Restart();
+        action();
+        duree += chrono.Elapsed;
+    }
+    var volume = GC.GetAllocatedBytesForCurrentThread()-debut;
+    return new Perf(duree/essais, $"{volume/(long)essais:n0}");
+}
+
+TimeSpan Mesurer(int essais, Action action) => Mesurer(essais, false, action).Duree;
+
+#!markdown
+
+## Initialisation
+
+#!csharp
+
+var date = new DateTime(2022, 06, 01);
+var intervalle = TimeSpan.FromMinutes(1);
+
+MesureC[][] tableauC;
+
+Mesurer(1, true, ()=>{
+    tableauC = new MesureC[8192][];
+    
+    for(int ligne = 0; ligne < tableauC.Length; ligne++)
+    {
+        tableauC[ligne] = new MesureC[8192];
+        for(int colonne = 0; colonne < tableauC[ligne].Length; colonne++)
+        {
+            double valeur = Random.Shared.NextDouble();
+            
+            tableauC[ligne][colonne] = new MesureC{ Date=date, Valeur=valeur, Source=Sources[Random.Shared.Next(Sources.Length)] };
+            date += intervalle;
+        }
+    }    
+})
+
+#!markdown
+
+## Traitements
+
+#!csharp
+
+var totalC = Mesurer(5, ()=>
+{
+    var sum = 0.0;
+   
+    for(int ligne = 0; ligne < tableauC.Length; ligne++)
+    {
+        for(int colonne = 0; colonne < tableauC[ligne].Length; colonne++)
+        {
+            sum += tableauC[ligne][colonne].Valeur;
+        }
+    }
+});
+totalC
+
+#!markdown
+
+## Passage de paramètres
+
+#!csharp
+
+double PondererS(MesureS s, double coef) => s.Valeur*coef;
+
+Mesurer(5, ()=>
+{
+    var sum = 0.0;
+
+    for(int ligne = 0; ligne < tableauS.Length; ligne++)
+    {
+        for(int colonne = 0; colonne < tableauS[ligne].Length; colonne++)
+        {
+            sum += PondererS(tableauS[ligne][colonne], 0.5);
+        }
+    }
+})
+
+#!markdown
+
+## Utilisation "Sur place"
+
+#!csharp
+
+string RefSource(string s) => s[^6..^0];
+
+Sources.Select(s => RefSource(s))
+
+#!csharp
+
+Mesurer(5, true, () =>
+{
+    for(int ligne = 0; ligne < tableauS.Length; ligne++)
+    {
+        for(int colonne = 0; colonne < tableauS[ligne].Length; colonne++)
+        {
+            RefSource(tableauS[ligne][colonne].Source);
+        }
+    }
+})
