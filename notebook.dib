@@ -1,0 +1,48 @@
+﻿#!csharp
+
+record Astre(string Nom, double Diametre) {}
+record Etoile(string Nom, double Diametre) : Astre(Nom, Diametre) {}
+record Planete(string Nom, double Diametre, int Perihelie, int Aphelie, bool Tellurique) : Astre(Nom, Diametre) {}
+
+var sys = new Astre[]
+{
+    new Etoile("Soleil", 1391.9e3),
+    
+    new Planete("Mercure" ,   4.880e3,   46,   70, true ),
+    new Planete("Vénus"   ,  12.104e3,  107,  109, true ),
+    new Planete("Terre"   ,  12.756e3,  147,  152, true ),
+    new Planete("Mars"    ,   6.805e3,  207,  249, true ),
+
+    new Planete("Jupiter" , 142.984e3,  741,  817, false),
+    new Planete("Saturne" , 120.536e3, 1349, 1504, false),
+    new Planete("Uranus"  ,  51.312e3, 2736, 3006, false),
+    new Planete("Neptune" ,  49.922e3, 4460, 4537, false)
+};
+sys
+
+#!csharp
+
+var planete = sys[5] as Planete;
+string type;
+
+if(planete.Perihelie < 100)
+{
+    type = "Planète proche du soleil";
+}
+else if(planete.Perihelie > 200 && planete.Tellurique)
+{
+    type = "Planète tellurique lointaine";
+}
+else if(planete.Perihelie > 200 && planete.Perihelie < 2000)
+{
+    type = "Planète lointaine";
+}
+else if(planete.Perihelie > 2000)
+{
+    type = "Planète très lointaine";
+}
+else
+{    
+   type = "Planète voisine de la Terre";
+}
+type
