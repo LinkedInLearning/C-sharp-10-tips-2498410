@@ -1,0 +1,12 @@
+﻿#!csharp
+
+var mot = "HAL";
+
+#!csharp
+
+mot.Select(c => c)
+
+#!csharp
+
+var cle = 7;
+var phrase = "SLWYPZVUUPLYCVPASHSPILYALWSBZILSSLXBLSSLULZAHKHBKLA";
