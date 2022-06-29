@@ -1,0 +1,77 @@
+﻿#!csharp
+
+#nullable enable
+
+record FicheAnimal(string Identifiant, int? IdMaitre=null, string? Nom=null) {}
+
+var registre = new HashSet<FicheAnimal>() {
+    new FicheAnimal("AAA111"),
+    new FicheAnimal("AAB112", 1, "Spot"),
+    new FicheAnimal("AAC113", 1, "Bandit"),
+    new FicheAnimal("AAD114"),
+    new FicheAnimal("AAE115", 3, "Benji"),
+    new FicheAnimal("AAF116"),
+    new FicheAnimal("AAG117", 2, "Brownie")
+};
+
+#!csharp
+
+var aaa111 = new FicheAnimal("AAA111");
+var aab112 = new FicheAnimal("AAB112");
+
+registre.Contains(aaa111)
+//registre.Contains(aab112)
+
+#!csharp
+
+#nullable enable
+
+class FicheAnimal
+{
+    public FicheAnimal(int? idMaitre, string? nom, string? identifiant)
+    {
+        IdMaitre    = idMaitre;
+        Nom         = nom;
+        Identifiant = identifiant;        
+    }
+    public FicheAnimal(string identifiant, int? idMaitre=null, string? nom=null) : this(idMaitre, nom, identifiant) { }               
+    public FicheAnimal(int idMaitre, string nom) : this(idMaitre, nom, null) { }
+    
+    public void Identifier(string identifiant) => Identifiant = identifiant;
+    
+    public int?    IdMaitre      { get; private set; } = null;
+    public string? Nom           { get; private set; } = null;
+    public string? Identifiant   { get; private set; } = null;    
+}
+
+var registre = new HashSet<FicheAnimal>() {
+    new FicheAnimal("AAA111"),
+    new FicheAnimal("AAB112", 1, "Spot"),
+    new FicheAnimal("AAC113", 1, "Bandit"),
+    new FicheAnimal("AAD114"),
+    new FicheAnimal("AAE115", 3, "Benji"),
+    new FicheAnimal("AAF116"),
+    new FicheAnimal("AAG117", 2, "Brownie"),
+    new FicheAnimal(2, "Spot")
+};
+
+#!csharp
+
+var registre0 = registre.ElementAt(0);
+var aaa111  = new FicheAnimal("AAA111");
+var spot_2  = new FicheAnimal(2, "Spot");
+
+registre.Contains(registre0)
+
+#!csharp
+
+FicheAnimal fiche;
+
+registre.TryGetValue(spot_2, out fiche)
+
+#!csharp
+
+fiche.Identifier("BBB222");
+var spot_2  = new FicheAnimal(2, "Spot");
+
+registre.Contains(new FicheAnimal("BBB222"))
