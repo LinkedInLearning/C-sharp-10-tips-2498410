@@ -1,0 +1,28 @@
+﻿#!markdown
+
+# 10 astuces à connaître en C#
+
+#!csharp
+
+var sortie = display(HTML("<h1>Pourquoi pas <i>...</i> ?</h1>"));
+var cours = new string[] {
+    "C# : Les collections et génériques",
+    "C# : Le multithreading",
+    "C# : Tests unitaires et développement dirigé par les tests",
+    "C# : Délégués, évènements et expressions lambdas",
+    "L'essentiel de .NET 6",
+    "L'essentiel de Blazor",
+    "L'essentiel d'Entity Framework Core 5",
+    "L'essentiel de C#",
+    "ASP .Net niveau Avancé"
+};
+
+for(var i=60; i-->0; )
+{
+    System.Threading.Thread.Sleep(1000);
+    sortie.Update(HTML(String.Format(
+        "<h1>Pourquoi pas <i>&ldquo;{0}&rdquo;</i> ?</h1><p>{1}</p>",
+        cours[Random.Shared.Next(cours.Length)],
+        string.Concat(Enumerable.Repeat('.', i))
+    )));
+}
