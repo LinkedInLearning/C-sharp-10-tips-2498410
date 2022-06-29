@@ -1,0 +1,25 @@
+﻿#!csharp
+
+//------------------- Fichier (re)généré -------------------//
+partial class Produit
+{
+    public int Id               { get; set; }
+    public string  Libelle      { get; set; }
+    public decimal PrixDAchat   { get; set; }
+    public decimal Marge        { get; set; }
+}
+//----------------------------------------------------------//
+
+var produit = new Produit{ Id=2, Libelle="Tongs Bahamas", PrixDAchat=2.5m, Marge=2m };
+produit
+
+#!csharp
+
+#r "System.ComponentModel.DataAnnotations"
+
+using System.ComponentModel.DataAnnotations;
+
+var res = new List<ValidationResult>();
+
+Validator.TryValidateObject(produit, new ValidationContext(produit), res);
+res
