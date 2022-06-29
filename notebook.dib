@@ -1,0 +1,66 @@
+﻿#!csharp
+
+using System.Text.RegularExpressions;
+
+enum SivErreur
+{
+    Aucune,
+    NombreDeSections,    
+    Prefixe,
+    Nombre,
+    Suffixe
+}
+class SivException : FormatException
+{
+    public SivException(string msg, SivErreur code) : base(msg) => Code = code;
+    public SivErreur Code { get; init; }
+}
+record Immatriculation
+{
+    public string  Prefixe  { get; init; } = "OO";
+    public string  Nombre   { get; init; } = "000";
+    public string  Suffixe  { get; init; } = "OO";
+
+    public static readonly Immatriculation Invalid = new Immatriculation();
+
+    private Immatriculation() {}
+
+    public static Immatriculation Parse(string entree, bool exception=true)
+    {
+        var err = SivErreur.Aucune;
+        var parts = entree.Split('-');
+        
+        if(parts.Length < 3)
+            err = SivErreur.NombreDeSections;
+        else if(!Regex.Match(parts[0], "^[A-HJ-NP-TW-Z]{2}$").Success)
+            err = SivErreur.Prefixe;
+        else if(!Regex.Match(parts[1], "^[0-9]{3}$").Success)
+            err = SivErreur.Nombre;        
+        else if(!Regex.Match(parts[0], "^[A-HJ-NP-TW-Z]{2}$").Success)
+            err = SivErreur.Suffixe;
+        else
+            return new Immatriculation{ 
+                Prefixe = parts[0],
+                Nombre  = parts[1],
+                Suffixe = parts[2]
+            };
+        if(exception)
+            throw new SivException("Mauvais format SIV", err);
+        return null;
+    }
+}
+
+#!csharp
+
+Immatriculation.Parse("AB-123-CD", true)
+
+#!csharp
+
+try
+{
+    var immatriculation = Immatriculation.Parse("AI-123-CD", true);
+}
+catch(SivException e)
+{
+    Console.Error.WriteLine($"{e.Message} ({e.Code})");
+}
