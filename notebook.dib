@@ -1,0 +1,98 @@
+﻿#!csharp
+
+record Astre(string Nom, double Diametre) {}
+record Etoile(string Nom, double Diametre) : Astre(Nom, Diametre) {}
+record Planete(string Nom, double Diametre, int Perihelie, int Aphelie, bool Tellurique) : Astre(Nom, Diametre) {}
+
+var sys = new Astre[]
+{
+    new Etoile("Soleil", 1391.9e3),
+    
+    new Planete("Mercure" ,   4.880e3,   46,   70, true ),
+    new Planete("Vénus"   ,  12.104e3,  107,  109, true ),
+    new Planete("Terre"   ,  12.756e3,  147,  152, true ),
+    new Planete("Mars"    ,   6.805e3,  207,  249, true ),
+
+    new Planete("Jupiter" , 142.984e3,  741,  817, false),
+    new Planete("Saturne" , 120.536e3, 1349, 1504, false),
+    new Planete("Uranus"  ,  51.312e3, 2736, 3006, false),
+    new Planete("Neptune" ,  49.922e3, 4460, 4537, false)
+};
+sys
+
+#!csharp
+
+var planete = sys[5] as Planete;
+string type;
+
+switch(planete.Perihelie)
+{
+    case <100: type = "Planète proche du soleil"; break;
+    case >200 when planete.Tellurique: type = "Planète tellurique lointaine"; break;
+    case >200 and <2000: type = "Planète lointaine"; break;
+    case >2000: type = "Planète très lointaine"; break;
+    default: type = "Planète voisine de la Terre"; break;
+}
+type
+
+#!csharp
+
+switch(planete)
+{
+    case { Perihelie: <100 }: type = "Planète proche du soleil"; break;
+    case { Perihelie: >200, Tellurique: true }: type = "Planète tellurique lointaine"; break;
+    case { Perihelie: >200 and <2000 }: type = "Planète lointaine"; break;
+    case { Perihelie: >2000 }: type = "Planète très lointaine"; break;
+    default: type = "Planète voisine de la Terre"; break;
+}
+type
+
+#!csharp
+
+var astre = sys[5];
+
+switch(astre)
+{
+    case Etoile: type = "Étoile"; break;
+    case Planete { Perihelie: <100 }: type = "Planète proche du soleil"; break;
+    case Planete { Perihelie: >200, Tellurique: true }: type = "Planète tellurique lointaine"; break;
+    case Planete { Perihelie: >200 and <2000 }: type = "Planète lointaine"; break;
+    case Planete { Perihelie: >2000 }: type = "Planète très lointaine"; break;
+    default: type = "Planète voisine de la Terre"; break;
+}
+type
+
+#!csharp
+
+var astre = sys[5];
+
+type = astre switch
+{
+    Etoile => "Étoile",
+    Planete { Perihelie: <100 } => "Planète proche du soleil",
+    Planete { Perihelie: >200, Tellurique: true } => "Planète tellurique lointaine",
+    Planete { Perihelie: >200 and <2000 } => "Planète lointaine",
+    Planete { Perihelie: >2000 } => "Planète très lointaine",
+    _ => "Planète voisine de la Terre"
+}
+
+#!markdown
+
+## Bonus (hors vidéo)
+
+#!csharp
+
+type = astre switch
+{
+    Etoile                                        => "Étoile",
+    Planete { Perihelie: <100 }                   => $"Planète proche du soleil",
+    Planete { Perihelie: >200, Tellurique: true } => "Planète tellurique lointaine",
+    Planete { Perihelie: var p, Aphelie: var a } when p is >200 and <2000 && p-a<150 
+                                                  => "Planète gazeuse orbite régulière",
+    Planete { Perihelie: >200 }                   => "Planète gazeuse lointaine",
+    _                                             => $"Planète voisine de la Terre"
+}
+
+#!csharp
+
+astre is Planete p && p.Perihelie is >200 and <2000 && p.Perihelie-p.Aphelie<150 ? "Planète gazeuse orbite régulière": "Autre"
