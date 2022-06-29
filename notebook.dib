@@ -1,0 +1,162 @@
+﻿#!csharp
+
+using System.ComponentModel;
+
+class CompositeurDeNoms
+{
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    protected Func<int, int> hasard = (max) => Random.Shared.Next(max);
+    
+    public CompositeurDeNoms(string sep = "-", Func<string, string> effet = null)
+    {   
+        Separateur = sep;
+        Effet = effet ?? PasDEffet;
+    }
+    
+    public string NomSuivant => String.Format(
+        "{1}{0}{2}{0}{3}",
+        Separateur,
+        Effet(Piocher(avant)),
+        Effet(Piocher(animaux)),
+        Effet(Piocher(apres))
+    );
+
+    public string               Separateur  { get; init; }
+    public Func<string, string> Effet       { get; init; }
+
+    private readonly string[] avant ={
+        "adorable", "abominable", "brave", "horrible", "impitoyable", "insupportable", "magnifique", "maigre",
+        "redoutable", "sage", "sale", "sombre", "splendide", "stupide", "terrible", "triste"
+    };
+    private readonly string[] animaux={
+        "abeille", "aigle", "alouette", "autruche", "baleine", "belette", "blaireau", "bombyx",
+        "bourdon", "buse", "canard", "castor", "cerf", "chacal", "chameau", "chien",
+        "chouette", "cigale", "cigogne", "coccinelle", "cochon", "colibri", "crevette", "dinde",
+        "dromadaire", "escargot", "faucon", "fourmi", "girafe", "gorille", "grue", "hibou",
+        "hippopotame", "hirondelle", "kangourou", "lapin", "lion", "loup", "loutre", "manchot",
+        "marmotte", "merle", "moineau", "mouche", "moule", "mouton", "oie", "otarie",
+        "ouistiti", "ours", "palourde", "paon", "papillon", "perroquet", "perruche", "phoque",
+        "pie", "pigeon", "pinson", "pintade", "poule", "puce", "renard", "sauterelle",
+        "souris", "taupe", "termite", "tigre", "tourterelle", "vache", "vautour", "vison"
+    };
+    private readonly string[] apres ={
+        "avare", "coupable", "extatique", "fourbe", "hirsute", "hypocrite", "loufoque", "malade",
+        "perplexe", "placide", "sauvage", "solitaire", "timide", "tranquille", "vivace", "vorace"
+    };
+    private string Piocher(string[] source) => source[hasard(source.Length)];
+    private string PasDEffet(string s) => s;
+}
+
+#!csharp
+
+var cdn0 = new CompositeurDeNoms();
+
+cdn0.NomSuivant
+
+#!csharp
+
+var cdn = new CompositeurDeNoms("", s=>$"{Char.ToUpper(s[0])}{s.Substring(1)}");
+
+(cdn.NomSuivant, cdn.NomSuivant)
+
+#!markdown
+
+## Tests
+
+#!csharp
+
+#r "nuget: Microsoft.NET.Test.Sdk"
+#r "nuget: MSTest.TestAdapter"
+#r "nuget: MSTest.TestFramework"
+
+#!csharp
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+class TestCompositeurDeNoms
+{
+    class CompositeurDeNomsTestable : CompositeurDeNoms
+    {
+        public CompositeurDeNomsTestable(Func<int, int> hasard, string sep, Func<string, string> effet) : base(sep, effet)
+            => this.hasard = hasard;        
+    }
+    CompositeurDeNoms NewCompositeurDeNoms(string sep = "-", Func<string, string> effet = null)
+    {
+        int n=0;
+        return new CompositeurDeNomsTestable(_ => n++, sep, effet);
+    }
+    
+    [TestMethod]
+    public void InitParDefaut1Tirage()
+    {
+        var test = NewCompositeurDeNoms();
+        
+        Assert.AreEqual("adorable-aigle-extatique", test.NomSuivant);
+    }
+    [TestMethod]
+    public void InitParDefaut2Tirages()
+    {
+        var test = NewCompositeurDeNoms();
+        var premier = test.NomSuivant;
+        
+        Assert.AreEqual("horrible-baleine-hypocrite", test.NomSuivant);
+    }
+    [TestMethod]
+    public void InitSeparateur2Tirages()
+    {
+        var test = NewCompositeurDeNoms(sep:".");
+        var premier = test.NomSuivant;
+        
+        Assert.AreEqual("horrible.baleine.hypocrite", test.NomSuivant);
+    }
+    [TestMethod]
+    public void InitEffet2Tirages()
+    {
+        var test = NewCompositeurDeNoms(effet: s=>s.ToUpper());
+        var premier = test.NomSuivant;
+        
+        Assert.AreEqual("HORRIBLE-BALEINE-HYPOCRITE", test.NomSuivant);
+    }
+    [TestMethod]
+    public void InitSeparateurEtEffet2Tirages()
+    {
+        var test = NewCompositeurDeNoms(sep:".", effet: s=>s.ToUpper());
+        var premier = test.NomSuivant;
+        
+        Assert.AreEqual("HORRIBLE.BALEINE.HYPOCRITE", test.NomSuivant);
+    }
+}
+
+#!markdown
+
+## Lancement des tests
+
+#!csharp
+
+var instance = new TestCompositeurDeNoms();
+var chrono = new System.Diagnostics.Stopwatch();
+(var reussis, var total) = (0, 0);
+
+Console.WriteLine("Démarrage des tests :");
+chrono.Start();
+foreach(var test in typeof(TestCompositeurDeNoms).GetMethods())
+{
+    if(test.GetCustomAttributes(typeof(TestMethodAttribute), false).Length > 0)
+    {
+        total++;
+        Console.Write($"- { test.Name } : ");
+        try
+        {
+            test.Invoke(instance, Array.Empty<object>());
+            Console.WriteLine("Ok");
+            reussis++;
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        
+    }
+}
+Console.WriteLine($"Durée : {chrono.Elapsed}, Tests {reussis}/{total} réussis.");
