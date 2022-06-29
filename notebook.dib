@@ -1,0 +1,40 @@
+﻿#!csharp
+
+enum Titre
+{
+    Chef_fe,
+    Sorcier_e,
+    Guerrier_e
+}
+string nom = "Plume d'Aigle";
+var titre = Titre.Chef_fe;
+
+$"{nom}: {titre}"
+
+#!csharp
+
+void Assert(bool condition) 
+{ 
+    if(!condition)
+    {
+        throw new ArgumentException("Assertion");
+    }
+}
+
+#!csharp
+
+#nullable enable
+
+void Traiter(string? nom, Titre t)
+{
+    Assert(nom is not null and { Length: >0 });
+    
+    StringBuilder sb = new(nom);
+    var sep = ",";
+    
+    if(t.HasFlag(Titre.Chef_fe   )) { sb.Insert(0, "Grand-e "); }
+    if(t.HasFlag(Titre.Sorcier_e )) { sb.Append($"{sep} puissant-e"); sep=" et"; }
+    if(t.HasFlag(Titre.Guerrier_e)) { sb.Append($"{sep} brave"); }
+    nom = sb.ToString();
+}
+Traiter("", titre)
