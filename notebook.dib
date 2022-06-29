@@ -1,0 +1,58 @@
+﻿#!csharp
+
+string[] noms = { 
+    "Docteur Moutarde", 
+    "Sergent Pervenche", 
+    "Professeur Leblanc", 
+    "Colonel Olive", 
+    "Monsieur Violet", 
+    "Madame Legris", 
+    "Mademoiselle Prunelle" 
+};
+var amis = new int[][]{
+    new int[]{ 2, 5 },
+    new int[]{ 0, 3, 4 },
+    new int[]{ 0, 6 }, 
+    new int[0], 
+    new int[]{ 1, 6 }, 
+    new int[]{ 3, 4 }, 
+    new int[]{ 5 }
+};
+var victime = 2;
+
+#!markdown
+
+## Alternative aux boucles
+
+#!csharp
+
+var probas = new double[noms.Length];
+
+for(int i=0; i<noms.Length; i++)
+{
+    probas[i] = Random.Shared.NextDouble();
+} 
+probas
+
+#!csharp
+
+double BonusAmi(int indice) => amis[victime].Contains(indice) ? .5 : 1;
+
+record Suspect(string Nom, double Proba);
+
+#!csharp
+
+var suspects = new List<Suspect>();
+
+for(var i=0; i<noms.Length; i++)
+{
+    if(i != victime)
+    {
+        suspects.Add(new Suspect(noms[i], probas[i] * BonusAmi(i)));
+    }
+}
+suspects
+
+#!csharp
+
+suspects.First(s => s.Proba == suspects.Max(s=>s.Proba))
