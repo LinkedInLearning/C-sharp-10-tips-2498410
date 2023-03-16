@@ -33,5 +33,5 @@ La branche master ne contient que les fichiers de base.
  Retrouvez mes autres formations sur [LinkedIn Learning][lil-URL-trainer].
 
 [lil-course-url]: https://www.linkedin.com/learning/10-astuces-a-connaitre-en-csharp
-[lil-thumbnail-url]: https://cdn.lynda.com/course/2875095/2875095-1615224395432-16x9.jpg
+[lil-thumbnail-url]: https://cdn.lynda.com/course/2498410/2498410-1662971776411-16x9.jpg
 [lil-URL-trainer]: https://www.linkedin.com/learning/instructors/sylvain-labasse
